@@ -9,3 +9,5 @@ dist/
 .agents/
 tp-images/
 package-lock.json
+*.pdf
+Readme.md
