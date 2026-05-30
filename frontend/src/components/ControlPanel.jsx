@@ -151,6 +151,64 @@ export default function ControlPanel({
                 </div>
             </div>
 
+            {/* 8. Super Résolution */}
+            <div className="pt-4 border-t border-slate-800/50 space-y-4">
+                <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                    <Maximize size={12} className="text-blue-400" /> 8. Super Résolution
+                </h4>
+                <div className="grid grid-cols-1 gap-2">
+                    <select 
+                        value={config.upscale} 
+                        onChange={(e) => setConfig({...config, upscale: e.target.value})}
+                        className="bg-slate-900/60 border border-slate-700 rounded-xl px-4 py-2 text-[10px] font-bold text-slate-300 uppercase focus:outline-none focus:border-blue-500 transition-all cursor-pointer"
+                    >
+                        <option value="none">Standard</option>
+                        <option value="700">700px (HD Ready)</option>
+                        <option value="1024">1024px (Full HD)</option>
+                        <option value="2k">2048px (2K Ultra)</option>
+                        <option value="5k">5120px (5K Retina)</option>
+                        <option value="10k">10240px (10K - Risqué)</option>
+                    </select>
+                    <p className="text-[8px] text-slate-600 uppercase tracking-widest text-center px-1">Améliore la clarté par interpolation et filtrage de netteté.</p>
+                </div>
+            </div>
+
+            {/* 9. Recadrage */}
+            <div className="pt-4 border-t border-slate-800/50 space-y-4">
+                <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                    <Scissors size={12} className="text-red-500" /> 9. Recadrage
+                </h4>
+                <button 
+                  onClick={() => setConfig({...config, crop: {...config.crop, active: !config.crop.active}})} 
+                  className={commonBtnClass(config.crop.active, 'bg-red-600 w-full')}
+                >
+                  {config.crop.active ? 'Désactiver' : 'Activer le Recadrage'}
+                </button>
+                
+                {config.crop.active && (
+                  <div className="space-y-4 pt-2 animate-in fade-in zoom-in duration-300">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-[9px] text-slate-500 uppercase tracking-tighter">X (%)</label>
+                        <input type="range" min="0" max="90" value={config.crop.x} onChange={(e) => setConfig({...config, crop: {...config.crop, x: parseInt(e.target.value)}})} className="w-full h-1" />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[9px] text-slate-500 uppercase tracking-tighter">Y (%)</label>
+                        <input type="range" min="0" max="90" value={config.crop.y} onChange={(e) => setConfig({...config, crop: {...config.crop, y: parseInt(e.target.value)}})} className="w-full h-1" />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[9px] text-slate-500 uppercase tracking-tighter">Larg (%)</label>
+                        <input type="range" min="10" max={100 - config.crop.x} value={config.crop.width} onChange={(e) => setConfig({...config, crop: {...config.crop, width: parseInt(e.target.value)}})} className="w-full h-1" />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[9px] text-slate-500 uppercase tracking-tighter">Haut (%)</label>
+                        <input type="range" min="10" max={100 - config.crop.y} value={config.crop.height} onChange={(e) => setConfig({...config, crop: {...config.crop, height: parseInt(e.target.value)}})} className="w-full h-1" />
+                      </div>
+                    </div>
+                  </div>
+                )}
+            </div>
+
             {/* 8. Matrice de pixels */}
             <div className="pt-4 border-t border-slate-800/50 flex items-center justify-between">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">

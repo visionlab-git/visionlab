@@ -177,6 +177,91 @@ export const resizeBilinear = (srcData, width, height, newWidth, newHeight) => {
     }
     return dstData;
 };
+export const cropImage = (srcData, width, height, x, y, cropW, cropH) => {
+    const dstData = new Uint8ClampedArray(cropW * cropH * 4);
+    for (let dy = 0; dy < cropH; dy++) {
+        for (let dx = 0; dx < cropW; dx++) {
+            const sx = x + dx;
+            const sy = y + dy;
+            if (sx >= 0 && sx < width && sy >= 0 && sy < height) {
+                const srcIdx = (sy * width + sx) * 4;
+                const dstIdx = (dy * cropW + dx) * 4;
+                dstData[dstIdx] = srcData[srcIdx];
+                dstData[dstIdx + 1] = srcData[srcIdx + 1];
+                dstData[dstIdx + 2] = srcData[srcIdx + 2];
+                dstData[dstIdx + 3] = srcData[srcIdx + 3];
+            }
+        }
+    }
+    return dstData;
+};
+
+// Bicubic Interpolation helper
+const cubicInterpolate = (p, x) => {
+    return p[1] + 0.5 * x * (p[2] - p[0] + x * (2.0 * p[0] - 5.0 * p[1] + 4.0 * p[2] - p[3] + x * (3.0 * (p[1] - p[2]) + p[3] - p[0])));
+};
+
+export const resizeBicubic = (srcData, width, height, newWidth, newHeight) => {
+    const dstData = new Uint8ClampedArray(newWidth * newHeight * 4);
+    const xRatio = width / newWidth;
+    const yRatio = height / newHeight;
+
+    for (let y = 0; y < newHeight; y++) {
+        for (let x = 0; x < newWidth; x++) {
+            const px = x * xRatio;
+            const py = y * yRatio;
+            const xInt = Math.floor(px);
+            const yInt = Math.floor(py);
+            const xFract = px - xInt;
+            const yFract = py - yInt;
+
+            const dstIdx = (y * newWidth + x) * 4;
+
+            for (let c = 0; c < 4; c++) {
+                const p = new Array(4);
+                const jRows = new Array(4);
+                
+                for (let j = -1; j < 3; j++) {
+                    const rowIdx = Math.max(0, Math.min(height - 1, yInt + j));
+                    const pRow = new Array(4);
+                    for (let i = -1; i < 3; i++) {
+                        const colIdx = Math.max(0, Math.min(width - 1, xInt + i));
+                        pRow[i + 1] = srcData[(rowIdx * width + colIdx) * 4 + c];
+                    }
+                    jRows[j + 1] = cubicInterpolate(pRow, xFract);
+                }
+                dstData[dstIdx + c] = Math.max(0, Math.min(255, cubicInterpolate(jRows, yFract)));
+            }
+        }
+    }
+    return dstData;
+};
+
+// Sharpening pass for "Super Resolution" feel
+export const sharpen = (data, width, height) => {
+    const original = new Uint8ClampedArray(data);
+    const kernel = [
+        0, -1, 0,
+        -1, 5, -1,
+        0, -1, 0
+    ];
+    
+    for (let y = 1; y < height - 1; y++) {
+        for (let x = 1; x < width - 1; x++) {
+            for (let c = 0; c < 3; c++) {
+                let res = 0;
+                for (let ky = -1; ky <= 1; ky++) {
+                    for (let kx = -1; kx <= 1; kx++) {
+                        const idx = ((y + ky) * width + (x + kx)) * 4 + c;
+                        res += original[idx] * kernel[(ky + 1) * 3 + (kx + 1)];
+                    }
+                }
+                data[(y * width + x) * 4 + c] = Math.max(0, Math.min(255, res));
+            }
+        }
+    }
+    return data;
+};
 
 // Arithmetic Operations
 export const imageArithmetic = (data1, data2, operation) => {

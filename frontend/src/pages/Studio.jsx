@@ -29,7 +29,9 @@ export default function Studio({ onOpenSupport }) {
     operation: 'none',
     interpolation: 'none',
     arithmetic: 'none',
-    showMatrix: false
+    showMatrix: false,
+    upscale: 'none', // Resolution upscale: '700', '1024', '2k', '5k', '10k'
+    crop: { active: false, x: 0, y: 0, width: 100, height: 100 }
   });
 
   const handleImageSelected = (dataUrl, imgObj) => {
@@ -59,7 +61,8 @@ export default function Studio({ onOpenSupport }) {
     setConfig({
       brightness: 0, contrast: 0, grayscale: false, invert: false, threshold: 0,
       equalize: false, filter: 'none', method: 'none', operation: 'none', 
-      interpolation: 'none', arithmetic: 'none', showMatrix: false
+      interpolation: 'none', arithmetic: 'none', showMatrix: false,
+      upscale: 'none', crop: { active: false, x: 0, y: 0, width: 100, height: 100 }
     });
   };
 
@@ -106,6 +109,7 @@ export default function Studio({ onOpenSupport }) {
               originalImageObj={originalImageObj} 
               secondImageObj={secondImageObj}
               config={config} 
+              setConfig={setConfig}
               onResetImage={handleResetImage} 
             />
 
