@@ -27,7 +27,7 @@ export default function ControlPanel({
     onSecondImageUpload,
     hasSecondImage 
 }) {
-  const commonBtnClass = (active, colorClass) => `px-3 py-2.5 text-[10px] md:text-[11px] font-bold rounded-xl transition-all border uppercase tracking-wider ${
+  const commonBtnClass = (active, colorClass) => `px-3 py-3 md:py-2.5 text-[10px] md:text-[11px] font-bold rounded-xl transition-all border uppercase tracking-wider ${
     active 
       ? `${colorClass} border-transparent shadow-lg text-white` 
       : 'bg-slate-800/40 text-slate-400 border-slate-700/50 hover:border-slate-500 hover:text-slate-200'
@@ -46,7 +46,9 @@ export default function ControlPanel({
       operation: 'none',
       interpolation: 'none',
       arithmetic: 'none',
-      showMatrix: false
+      showMatrix: false,
+      upscale: 'none',
+      crop: { active: false, x: 10, y: 10, width: 80, height: 80, showHandles: false }
     });
   };
 
@@ -64,7 +66,7 @@ export default function ControlPanel({
   };
 
   return (
-    <div className="w-full lg:w-80 glass-panel rounded-2xl md:rounded-3xl p-5 md:p-6 flex flex-col gap-6 overflow-y-auto custom-scrollbar border border-slate-800/50 shadow-2xl relative z-20 max-h-[50vh] lg:max-h-full">
+    <div className="w-full lg:w-72 glass-panel rounded-2xl md:rounded-3xl p-3 md:p-4 flex flex-col flex-none lg:flex-1 gap-6 overflow-y-auto custom-scrollbar border border-slate-800/50 shadow-2xl relative z-20 min-h-[300px] sm:min-h-[400px]">
       <div className="flex items-center justify-between border-b border-slate-800/50 pb-4">
         <div className="flex items-center gap-2">
             <div className="p-1.5 bg-blue-600/10 rounded-lg text-blue-400">
@@ -178,12 +180,40 @@ export default function ControlPanel({
                 <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
                     <Scissors size={12} className="text-red-500" /> 9. Recadrage
                 </h4>
-                <button 
-                  onClick={() => setConfig({...config, crop: {...config.crop, active: !config.crop.active}})} 
-                  className={commonBtnClass(config.crop.active, 'bg-red-600 w-full')}
-                >
-                  {config.crop.active ? 'Désactiver' : 'Activer le Recadrage'}
-                </button>
+                <div className="flex flex-col gap-2">
+                    {!config.crop.active ? (
+                        <button 
+                            onClick={() => setConfig({...config, crop: {...config.crop, active: true, showHandles: true}})} 
+                            className={commonBtnClass(false, 'bg-blue-600 w-full')}
+                        >
+                            Démarrer le Recadrage
+                        </button>
+                    ) : (
+                        <div className="flex gap-2">
+                            {config.crop.showHandles ? (
+                                <button 
+                                    onClick={() => setConfig({...config, crop: {...config.crop, showHandles: false}})} 
+                                    className={commonBtnClass(true, 'bg-green-600 flex-1')}
+                                >
+                                    Valider
+                                </button>
+                            ) : (
+                                <button 
+                                    onClick={() => setConfig({...config, crop: {...config.crop, showHandles: true}})} 
+                                    className={commonBtnClass(false, 'bg-amber-600 flex-1')}
+                                >
+                                    Modifier
+                                </button>
+                            )}
+                            <button 
+                                onClick={() => setConfig({...config, crop: {...config.crop, active: false, showHandles: false}})} 
+                                className="px-3 py-2 bg-slate-800 text-slate-400 hover:text-white rounded-xl text-[10px] font-bold uppercase transition-all"
+                            >
+                                Reset
+                            </button>
+                        </div>
+                    )}
+                </div>
                 
                 {config.crop.active && (
                   <div className="space-y-4 pt-2 animate-in fade-in zoom-in duration-300">

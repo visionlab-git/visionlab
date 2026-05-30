@@ -57,8 +57,8 @@ export default function Sidebar({ activeModule, setActiveModule, onOpenSupport }
   ];
 
   return (
-    <aside className="w-80 glass border-r border-slate-800/50 flex flex-col z-20 h-screen">
-      <div className="p-8 border-b border-slate-800/50">
+    <aside className="w-64 glass border-r border-slate-800/50 flex flex-col z-20 h-screen transition-all duration-300">
+      <div className="p-6 border-b border-slate-800/50">
         <div className="flex items-center gap-3 mb-2">
           <div className="w-12 h-12 rounded-2xl overflow-hidden shadow-lg shadow-blue-500/20 border border-slate-700/50">
             <img src="/logo.png" alt="VisionLab Logo" className="w-full h-full object-cover" />
@@ -75,7 +75,7 @@ export default function Sidebar({ activeModule, setActiveModule, onOpenSupport }
           <button
             key={chapter.id}
             onClick={() => setActiveModule(chapter.id)}
-            className={`w-full group relative flex flex-col p-4 rounded-2xl transition-all duration-300 ${activeModule === chapter.id
+            className={`w-full group relative flex flex-col p-3 rounded-xl transition-all duration-300 ${activeModule === chapter.id
                 ? 'bg-slate-800/50 border border-slate-700/50 shadow-xl'
                 : 'hover:bg-slate-800/30 border border-transparent'
               }`}
